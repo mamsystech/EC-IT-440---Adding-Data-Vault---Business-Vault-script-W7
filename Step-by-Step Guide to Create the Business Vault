@@ -1,0 +1,75 @@
+CREATE SCHEMA bv;
+GO
+CREATE TABLE bv.CustomerHub (
+    CustomerID INT PRIMARY KEY, -- Natural key
+    LoadDate DATETIME,
+    RecordSource VARCHAR(50)
+);
+
+CREATE TABLE bv.ProductHub (
+    ProductID INT PRIMARY KEY, -- Natural key
+    LoadDate DATETIME,
+    RecordSource VARCHAR(50)
+);
+
+CREATE TABLE bv.OrderHub (
+    OrderID INT PRIMARY KEY, -- Natural key
+    LoadDate DATETIME,
+    RecordSource VARCHAR(50)
+);
+
+CREATE TABLE bv.SupplierHub (
+    SupplierID INT PRIMARY KEY, -- Natural key
+    LoadDate DATETIME,
+    RecordSource VARCHAR(50)
+);
+
+CREATE TABLE bv.CustomerOrderLink (
+    CustomerID INT,
+    OrderID INT,
+    LoadDate DATETIME,
+    RecordSource VARCHAR(50),
+    PRIMARY KEY (CustomerID, OrderID), -- Composite key
+    FOREIGN KEY (CustomerID) REFERENCES bv.CustomerHub(CustomerID),
+    FOREIGN KEY (OrderID) REFERENCES bv.OrderHub(OrderID)
+);
+
+CREATE TABLE bv.ProductOrderLink (
+    ProductID INT,
+    OrderID INT,
+    LoadDate DATETIME,
+    RecordSource VARCHAR(50),
+    PRIMARY KEY (ProductID, OrderID), -- Composite key
+    FOREIGN KEY (ProductID) REFERENCES bv.ProductHub(ProductID),
+    FOREIGN KEY (OrderID) REFERENCES bv.OrderHub(OrderID)
+);
+
+CREATE TABLE bv.CustomerSatellite (
+    CustomerID INT,
+    CustomerName VARCHAR(100),
+    CustomerAddress VARCHAR(255),
+    LoadDate DATETIME,
+    RecordSource VARCHAR(50),
+    PRIMARY KEY (CustomerID, LoadDate), -- Historical tracking
+    FOREIGN KEY (CustomerID) REFERENCES bv.CustomerHub(CustomerID)
+);
+
+CREATE TABLE bv.ProductSatellite (
+    ProductID INT,
+    ProductDescription VARCHAR(255),
+    ProductPrice DECIMAL(10, 2),
+    LoadDate DATETIME,
+    RecordSource VARCHAR(50),
+    PRIMARY KEY (ProductID, LoadDate), -- Historical tracking
+    FOREIGN KEY (ProductID) REFERENCES bv.ProductHub(ProductID)
+);
+
+CREATE TABLE bv.OrderSatellite (
+    OrderID INT,
+    OrderDate DATETIME,
+    OrderStatus VARCHAR(50),
+    LoadDate DATETIME,
+    RecordSource VARCHAR(50),
+    PRIMARY KEY (OrderID, LoadDate), -- Historical tracking
+    FOREIGN KEY (OrderID) REFERENCES bv.OrderHub(OrderID)
+);
